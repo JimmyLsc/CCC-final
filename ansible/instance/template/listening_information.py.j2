@@ -1,0 +1,15 @@
+frontend_host = '{{hostvars[ansible_host]['groups']['instance1'][0]}}'
+instance1_ip = '{{hostvars[ansible_host]['groups']['instance1'][0]}}'
+instance2_ip = '{{hostvars[ansible_host]['groups']['instance2'][0]}}'
+instance3_ip = '{{hostvars[ansible_host]['groups']['instance3'][0]}}'
+instance4_ip = '{{hostvars[ansible_host]['groups']['instance4'][0]}}'
+host = '{{ansible_host}}'
+if host == instance1_ip:
+    instance_number = 1
+if host == instance2_ip:
+    instance_number =2
+if host == instance3_ip:
+    instance_number = 3
+if host == instance4_ip:
+    instance_number = 4
+    

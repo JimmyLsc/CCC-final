@@ -1,0 +1,97 @@
+---
+- name: copy the template file to environment
+  become: yes
+  template:
+    src: "{{workplace_path}}/template/environment-proxy.environment.j2"
+    dest: "/etc/environment"
+    follow: yes
+
+- name: Update apt
+  become: yes
+  apt:
+    upgrade: yes
+    update_cache: yes
+
+- name: Uninstall old versions of docker
+  tags: 'docker'
+  become: yes
+  apt:
+    name: ['docker', 'docker-engine', 'docker.io']
+    state: absent
+
+- name: install dependencies
+  become: yes
+  apt:
+    name: ['build-essential','vim','unzip','git','xfsprogs','python3-pip','python3-setuptools','python-pip','apt-transport-https','ca-certificates','curl','python-setuptools','software-properties-common']
+    state: latest
+    install_recommends: no
+    update_cache: yes
+
+- name: install couchdb-python
+  become: yes
+  pip:
+    name: couchdb
+    state: latest
+
+- name: Add Docker apt repository key
+  tags: 'docker'
+  become: yes
+  apt_key:
+    url: https://download.docker.com/linux/ubuntu/gpg
+    state: present
+
+
+- name: Add Docker apt repository and update apt cache
+  tags: 'docker'
+  become: yes
+  apt_repository:
+    repo: "deb https://download.docker.com/linux/{{ ansible_distribution|lower }} {{ ansible_distribution_release }} stable"
+    mode: '644'
+    update_cache: yes
+    state: present
+
+- name: Install docker
+  tags: 'docker'
+  become: yes
+  apt:
+    name: ['docker-ce']
+    state: latest
+    install_recommends: no
+    update_cache: yes
+
+- name: Install docker-compose
+  tags: 'docker'
+  become: yes
+  pip:
+    name: ['docker-compose']
+    version: 1.22.0
+    state: present
+
+- name: create docker proxy file directory
+  become: yes
+  file:
+    state: directory
+    path: /etc/systemd/system/docker.service.d
+
+- name: create docker proxy file
+  become: yes
+  file: 
+    state: touch
+    path: "/etc/systemd/system/docker.service.d/http-proxy.conf"
+
+  
+- name: copy the template of docker's proxy
+  become: yes
+  template:
+    src: "{{workplace_path}}/template/docker-environment.http-proxy.conf.j2"
+    dest: "/etc/systemd/system/docker.service.d/http-proxy.conf"
+
+
+- name: reboot the machine
+  become: yes
+  reboot:
+    reboot_timeout: 600
+
+
+
+

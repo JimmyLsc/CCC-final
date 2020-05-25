@@ -1,0 +1,46 @@
+---
+- name: Part disk
+  become: yes
+  parted: 
+    device: /dev/vdb
+    number: 1
+    state: "present"
+
+- name: Make file system
+  become: yes
+  filesystem:
+    fstype: ext4
+    dev: /dev/vdb1
+
+- name: Check folders
+  become: yes
+  stat:
+    path: /data
+  register: directory_stats
+
+- debug:
+    msg: "| directory_stats ==> {{ directory_stats }}"
+
+- name: Create directory
+  become: yes
+  file:
+    path: /data
+    recurse: yes
+    state: directory
+  when: directory_stats.stat.exists == false
+
+- name: Mount device
+  become: yes
+  mount:
+    path: /data
+    src: /dev/vdb1
+    fstype: ext4
+    state: mounted
+
+- name: Create directory
+  become: yes
+  file:
+    path: /data/couchcb_data
+    recurse: yes
+    state: directory
+

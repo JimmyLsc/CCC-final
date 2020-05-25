@@ -1,0 +1,15 @@
+{
+  "ExpandedNodes": [
+    "",
+    "\\appfront",
+    "\\appfront\\src",
+    "\\appfront\\src\\components",
+    "\\appfront\\src\\router",
+    "\\appfront\\src\\view",
+    "\\Demo",
+    "\\myapp",
+    "\\nginx"
+  ],
+  "SelectedNode": "\\appfront\\src\\view\\analysis.vue",
+  "PreviewInSolutionExplorer": false
+}

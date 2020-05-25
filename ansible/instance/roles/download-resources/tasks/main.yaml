@@ -1,0 +1,31 @@
+---
+- name: Check folders
+  become: yes
+  stat:
+    path: /CCC-Assignment2
+  register: directory_stats
+
+- debug:
+    msg: "| directory_stats ==> {{ directory_stats }}"
+
+- name: Create directory
+  become: yes
+  file:
+    path: /CCC-Assignment2
+    recurse: yes
+    state: directory
+  when: directory_stats.stat.exists == false
+
+- name: download file from github
+  become: yes
+  git:
+    repo: https://github.com/Mialovewatermelon/CCC-Assignment2.git
+    dest: /CCC-Assignment2
+
+
+- name: copy instance information file
+  become: yes
+  template: 
+    src: "{{workplace_path}}/template/listening_information.py.j2"
+    dest: "/CCC-Assignment2/listening/listening_information.py"
+

@@ -1,0 +1,46 @@
+- hosts: all
+  vars_files:
+    - host_vars/instance.yaml
+  gather_facts: true
+
+  roles:
+    - role: mount-volumes
+    - role: docker-install
+    - role: download-resources
+
+
+- hosts: instance1
+  vars_files:
+    - host_vars/instance.yaml
+  gather_facts: true
+  roles:
+    - role: instance1-docker-compose
+
+- hosts: instance2
+  vars_files:
+    - host_vars/instance.yaml
+  gather_facts: true
+  roles:
+    - role: instance2-docker-compose
+
+- hosts: instance3
+  vars_files:
+    - host_vars/instance.yaml
+  gather_facts: true
+  roles:
+    - role: instance3-docker-compose
+
+- hosts: dbSlave
+  vars_files:
+    - host_vars/instance.yaml
+  gather_facts: true
+  roles:
+    - role: couch-db-cluster
+
+- hosts: instance4
+  vars_files:
+    - host_vars/instance.yaml
+  gather_facts: true
+  roles:
+    - role: couchdb-savefile
+    - role: instance4-docker-compose

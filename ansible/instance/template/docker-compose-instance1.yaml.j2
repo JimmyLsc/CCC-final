@@ -1,0 +1,29 @@
+version: "3"
+services:
+  couchdb:
+    container_name: "couchdb"
+    image: ibmcom/couchdb3:3.0.0
+    hostname: couchdb
+    ports:
+      - 5984:5984
+      - 5986:5986
+      - 4369:4369
+      - 9100-9200:9100-9200
+    environment:
+      - COUCHDB_USER=admin
+      - COUCHDB_PASSWORD=admin
+      - NODENAME={{ ansible_host }}  
+
+  nginx:
+    restart: always
+    image: nginx:stable-alpine
+    ports:
+    - "80:80"
+    volumes:
+    - "/home/ubuntu/nginx/conf/conf.d/default.conf:/etc/nginx/conf.d/default.conf"
+    - "/home/ubuntu/nginx/conf/nginx.conf:/etc/nginx/nginx.conf"
+    - "/home/ubuntu/nginx/www:/usr/share/nginx/html"
+
+  listening:
+    restart: always
+    build: /CCC-Assignment2/listening

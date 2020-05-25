@@ -1,0 +1,46 @@
+---
+- name: Check folders
+  become: yes
+  stat:
+    path: /data/py_script
+  register: directory_stats
+
+- debug:
+    msg: "| directory_stats ==> {{ directory_stats }}"
+
+- name: Create directory
+  become: yes
+  file:
+    path: /data/py_script
+    recurse: yes
+    state: directory
+  when: directory_stats.stat.exists == false
+
+- name: copy the python template to directory
+  become: yes
+  template:
+    src: "{{workplace_path}}/template/save_view_doc.py.j2"
+    dest: "/data/py_script/save_view_doc.py"
+
+- name: copy the python template to directory
+  become: yes
+  template:
+    src: "{{workplace_path}}/template/create_db.py.j2"
+    dest: "/data/py_script/create_db.py"
+
+
+- name: install couchdb
+  become: yes
+  pip: 
+    name: couchdb
+    state: latest
+
+- name: create database
+  become: yes
+  command: python3 /data/py_script/create_db.py
+
+- name: run database upload script
+  become: yes
+  command: python3 /data/py_script/save_view_doc.py
+
+

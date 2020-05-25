@@ -1,0 +1,75 @@
+---
+
+- debug:
+    msg: http://admin:admin@{{hostvars[ansible_host]['groups']['dbMaster'][0]}}:5984/_cluster_setup
+
+
+# - name: make the cluster coordinater 
+#   become: yes
+#   uri: 
+#     method: POST
+#     status_code: 201
+#     return_content: yes
+#     headers: 
+#       Content-Type: application/json
+#     body: {"action": "enable_cluster", "bind_address": "0.0.0.0", "username": "admin", "password": "admin", "port": 5984, "node_count": "3", "remote_node": "{{ansible_host}}", "remote_current_user": "admin", "remote_current_password": "admin" }
+#     body_format: json
+#     url_username: admin
+#     url_password: admin
+#     url: http://admin:admin@{{hostvars[ansible_host]['groups']['dbMaster'][0]}}:5984/_cluster_setup
+
+
+# - debug:
+#     msg: "{{ result.json }}"
+
+- name: add node 
+  become: yes
+  uri: 
+    method: POST
+    status_code: [201, 409]
+    return_content: yes
+    headers: 
+      Content-Type: application/json
+    body: {"action": "add_node", "host": "{{ansible_host}}", "port": "5984", "username": "admin", "password":"admin"}
+    body_format: json
+    url_username: admin
+    url_password: admin
+    url: http://admin:admin@{{hostvars[ansible_host]['groups']['dbMaster'][0]}}:5984/_cluster_setup
+  register: result
+
+- debug:
+    msg: "{{ result.json }}"
+
+- name: finish cluster
+  become: yes
+  uri: 
+    method: POST
+    status_code: [201,500]
+    return_content: yes
+    headers: 
+      Content-Type: application/json
+    body: {"action": "finish_cluster"}
+    body_format: json
+    url_username: admin
+    url_password: admin
+    url: http://admin:admin@{{hostvars[ansible_host]['groups']['dbMaster'][0]}}:5984/_cluster_setup
+  register: result
+
+- debug:
+    msg: "{{ result.json }}"
+
+- name: show the cluster reult
+  become: yes
+  uri: 
+    method: GET
+    status_code: 200
+    return_content: yes
+    url_username: admin
+    url_password: admin
+    url: http://admin:admin@{{hostvars[ansible_host]['groups']['dbMaster'][0]}}:5984/_membership
+  register: result
+
+- debug:
+    msg: "{{ result.json }}"
+      
+

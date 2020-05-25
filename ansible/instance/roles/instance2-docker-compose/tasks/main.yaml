@@ -1,0 +1,42 @@
+---
+
+- name: copy url file
+  become: yes
+  template: 
+    src: "{{workplace_path}}/template/couchdb_url.py.j2"
+    dest: "/CCC-Assignment2/myapp/couchdb_url.py"
+
+- name: Check folders
+  become: yes
+  stat:
+    path: /docker
+  register: directory_stats
+
+- debug:
+    msg: "| directory_stats ==> {{ directory_stats }}"
+
+- name: Create directory
+  become: yes
+  file:
+    path: /docker
+    recurse: yes
+    state: directory
+  when: directory_stats.stat.exists == false
+
+- name: template the docker compose file
+  become: yes
+  template:
+    src: "{{workplace_path}}/template/docker-compose-instance2.yaml.j2"
+    dest: "/docker/docker-compose.yaml"
+
+- name: stop docker-compose
+  become: yes
+  command: docker-compose -f /docker/docker-compose.yaml down --rmi all
+
+- name: create docker-compose
+  become: yes
+  command: docker-compose -f /docker/docker-compose.yaml up -d --build --force-recreate
+
+
+
+

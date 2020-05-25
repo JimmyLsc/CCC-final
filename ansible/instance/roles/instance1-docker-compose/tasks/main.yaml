@@ -1,0 +1,64 @@
+---
+- name: create nginx directory
+  become: yes
+  file: 
+    path: /home/ubuntu/nginx/{{item.place}}
+    state: directory
+    recurse: yes
+  loop: 
+    - place: conf/conf.d
+    - place: www
+    - place: log
+
+- name: copy index file
+  become: yes
+  command: "cp -r /CCC-Assignment2/appfront/dist/. /home/ubuntu/nginx/www"
+  
+- name: copy file 
+  become: yes
+  template:
+    src: "{{workplace_path}}/template/{{item.src}}"
+    dest: "/home/ubuntu/nginx/{{item.dest}}"
+  loop:
+    - src: 'default.conf.j2'
+      dest: 'conf/conf.d/default.conf'
+    - src: 'nginx.conf.j2'
+      dest: 'conf/nginx.conf'
+
+
+
+- name: Check folders
+  become: yes
+  stat:
+    path: /docker
+  register: directory_stats
+
+- debug:
+    msg: "| directory_stats ==> {{ directory_stats }}"
+
+- name: Create directory
+  become: yes
+  file:
+    path: /docker
+    recurse: yes
+    state: directory
+  when: directory_stats.stat.exists == false
+
+- name: template the docker compose file
+  become: yes
+  template:
+    src: "{{workplace_path}}/template/docker-compose-instance1.yaml.j2"
+    dest: "/docker/docker-compose.yaml"
+
+
+- name: stop docker-compose
+  become: yes
+  command: docker-compose -f /docker/docker-compose.yaml down --rmi all
+
+- name: create docker-compose
+  become: yes
+  command: docker-compose -f /docker/docker-compose.yaml up -d --build --force-recreate
+
+
+
+

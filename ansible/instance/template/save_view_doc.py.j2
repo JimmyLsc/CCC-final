@@ -1,0 +1,25 @@
+
+#! /usr/bin/env python3
+import couchdb
+import copy
+
+server = couchdb.Server('http://admin:admin@{{hostvars[ansible_host]['groups']['dbMaster'][0]}}:5984/')
+keys = ['southern', 'western', 'vic', 'nsw', 'tas', 'queens']
+data = {}
+data['_id'] = "_design/tweeterData"
+data['views'] = {
+    "pos":{"map": "function(doc){if(doc.label ==1){emit(doc.id, doc.label)}}","reduce": "_count"},
+    "neg":{"map": "function(doc){if(doc.label ==-1){emit(doc.id, doc.label)}}","reduce": "_count"},
+    "china_pos":{"map": "function(doc){if(doc.text.toLowerCase().search('china')>=0 && doc.label ==1){emit(doc.id, doc.label)}}", "reduce": "_count"},
+    "china_neg":{"map": "function(doc){if(doc.text.toLowerCase().search('china')>=0 && doc.label ==-1){emit(doc.id, doc.label)}}","reduce": "_count"},
+    "pos_text":{"map": "function(doc){if(doc.label ==1){emit(doc.id, doc.text)}}"},
+    "neg_text":{"map": "function(doc){if(doc.label ==-1){emit(doc.id, doc.text)}}"},
+    "china_pos_text":{"map": "function(doc){if(doc.text.toLowerCase().search('china')>=0 && doc.label ==1){emit(doc.id, doc.text)}}"},
+    "china_neg_text":{"map": "function(doc){if(doc.text.toLowerCase().search('china')>=0 && doc.label ==-1){emit(doc.id, doc.text)}}"},
+}
+for key in keys:
+    try:
+        data1 = copy.deepcopy(data)
+        server[key].save(data1)
+    except:
+        print('existed')

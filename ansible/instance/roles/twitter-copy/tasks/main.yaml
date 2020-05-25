@@ -1,0 +1,30 @@
+---
+- name: Check folders
+  become: yes
+  stat:
+    path: /data/data
+  register: directory_stats
+
+- debug:
+    msg: "| directory_stats ==> {{ directory_stats }}"
+
+- name: Create directory
+  become: yes
+  file:
+    path: /data/data
+    recurse: yes
+    state: directory
+  when: directory_stats.stat.exists == false
+
+- name: download file from github
+  become: yes
+  git:
+    repo: https://github.com/JimmyLsc/data.git
+    dest: /data/data
+
+- name: run the script
+  become: yes
+  command: python3 /data/data/update.py
+
+
+
