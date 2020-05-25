@@ -21,12 +21,6 @@ http://172.26.133.112
 # database 
 instance1, instance2, instance3 
 
-# part github
-
-ansible: https://github.com/JimmyLsc/ansible
-old_data: https://github.com/JimmyLsc/data
-back-front-end: https://github.com/Mialovewatermelon/CCC-Assignment2
-
 # ansible video site
 
 instance create: https://youtu.be/jCz7eaznCZw
