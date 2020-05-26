@@ -27,6 +27,6 @@ instance3
 
 instance create: https://youtu.be/jCz7eaznCZw  
 application deployment: https://youtu.be/7XHMvtuJqSU  
-upload data: https://github.com/JimmyLsc/CCC-final
+upload data: https://youtu.be/c-DJ8X9_Jhk
 
 # front end video site
