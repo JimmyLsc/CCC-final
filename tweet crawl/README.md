@@ -39,3 +39,9 @@ Originally old tweets from each day are stored in a json, concentrate them into 
 # 5. analysis directory
 
 Some analysis based on history tweets.
+
+# 6. analysis with AURIN
+
+```
+data_analysis.py
+```
